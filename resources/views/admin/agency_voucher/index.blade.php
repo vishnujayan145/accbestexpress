@@ -1,0 +1,472 @@
+@extends('layouts.app')
+
+@section('title')
+    {{ __('root.reports.agency_voucher_heading') }}
+@stop
+@section('top-bar')
+    @include('includes.top-bar')
+@stop
+@section('left-sidebar')
+    @include('includes.left-sidebar')
+@stop
+@section('content')
+<style>
+    /* Style for Table Head */
+    #invoiceTable thead {
+        background-color: #60a7d2; /* Change this color as needed */
+        color: white;
+    }
+
+    /* Style for Table Foot */
+    #invoiceTable tfoot {
+        background-color: #2e78b9; /* Change this color as needed */
+        color: white;
+    }
+
+    /* Optional: Style for Table Rows */
+    #invoiceTable tbody tr:nth-child(even) {
+        background-color: #f9f9f9; /* Light grey for even rows */
+    }
+
+    #invoiceTable tbody tr:nth-child(odd) {
+        background-color: #ffffff; /* White for odd rows */
+    }
+</style>
+<section @if($is_rtl) dir="rtl" @endif class="content">
+        <div class="header">
+            <h2 class="text-center">{{ __('root.reports.agency_voucher_heading') }}</h2>
+           
+            <br>
+        </div>
+        <div class="container-fluid">
+        <div class="row clearfix">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="card">
+                        <div class="header">
+                            
+                            <div class="body">
+                                <form enctype="multipart/form-data" class="form" id="addInvoiceForm" method="post"
+                                      action="">
+
+                                    {{ csrf_field() }}
+                                    <div class="voucher-fields">
+                                    <div class="row clearfix">
+
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-4">
+                                            <div class="form-group form-float">
+                                                <div class="form-line row g-3 col">
+                                                    <input name="voucher_id" type="text" value="{{ $next_voucher_no }}" readonly
+                                                           class="form-control">
+                                                    <label class="form-label">Voucher No</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-4">
+                                            <div class="form-group form-float">
+                                                <div class="form-line">
+                                                    <input value="<?php echo date('Y-m-d'); ?>" name="date" type="date"
+                                                           class="form-control">
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-4">
+                                            <div class="form-group form-float">
+                                                <div class="form-line">
+                                                <select class="form-select form-control " name="branch">
+                                                                <option selected>Branch</option>
+                                                                @foreach ($branches as $project)
+                                                            <option @if ($project->id == old('branch_id')) selected @endif
+                                                                value="{{ $project->id }}">{{ $project->name }}</option>
+                                                        @endforeach
+                                                                </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                       <!-- <div class="col-lg-3 col-md-3 col-sm-12 col-xs-3">
+                                            <div class="form-group form-float">
+                                                <div class="form-line">
+                                                <select class="form-select form-control "name="bank_name">
+                                                                <option selected>Bank name</option>
+                                                                @foreach ($bank_cashes->sortByDesc('id') as $bank_cash)
+                                                            <option @if ($bank_cash->id == old('bank_cash_id')) selected @endif
+                                                                value="{{ $bank_cash->id }}">{{ $bank_cash->name }}
+                                                            </option>
+                                                        @endforeach
+                                                                </select>
+                                                </div>
+                                            </div>
+                                        </div>-->
+                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                            <div class="form-group form-float">
+                                                <div class="form-line">
+                                                <select class="form-select form-control " name="head_of_account" >
+                                                                <option selected>Select head of account</option>
+                                                                @foreach ($income_expense_heads->sortByDesc('id') as $HeadOfAccount)
+                                                            <option @if ($HeadOfAccount->id == old('income_expense_head_id')) selected @endif
+                                                                value="{{ $HeadOfAccount->id }}">
+                                                                {{ $HeadOfAccount->name }}</option>
+                                                        @endforeach
+                                                                </select>
+                                                </div>
+                                                <label class="form-label">Outstanding amount 1000 Cr</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                            <div class="form-group form-float">
+                                                <div class="form-line">
+                                                    <input value=""  name="description" type="text"
+                                                           class="form-control">
+                                                    <label class="form-label">Description</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                            <div class="form-group form-float">
+                                                
+                                            </div>
+                                        </div>
+                                        </div>
+                                        <div class="row invoice-fields">
+
+ 
+                                    
+ <div class="col-lg-2 col-md-2 col-sm-12 col-xs-2">
+                                            <div class="form-group form-float">
+                                                <div class="form-line row g-3 col">
+                                                    <input value="" name="invoice_no" type="text"
+                                                           class="form-control">
+                                                    <label class="form-label">Invoice</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-2">
+                                            <div class="form-group form-float">
+                                                <div class="form-line row g-3 col">
+                                                    <input value="" name="pcs" type="text"
+                                                           class="form-control">
+                                                    <label class="form-label">Pcs</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-1 col-md-1 col-sm-12 col-xs-1">
+                                            <div class="form-group form-float">
+                                                <div class="form-line row g-3 col">
+                                                    <input value="" name="weight" type="text" oninput="calculateAmount()"
+                                                           class="form-control">
+                                                    <label class="form-label">Weight</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-2">
+                                            <div class="form-group form-float">
+                                                <div class="form-line row g-3 col">
+                                                    <input value="" name="destination" type="text"
+                                                           class="form-control">
+                                                    <label class="form-label">Destination</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-1 col-md-1 col-sm-12 col-xs-1">
+                                            <div class="form-group form-float">
+                                                <div class="form-line row g-3 col">
+                                                    <input value="" name="rate" type="text" oninput="calculateAmount()"
+                                                           class="form-control">
+                                                    <label class="form-label">Rate</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-1 col-md-1 col-sm-12 col-xs-1">
+                                            <div class="form-group form-float">
+                                                <div class="form-line row g-3 col">
+                                                    <input value="" name="duty" type="text" oninput="calculateAmount()"
+                                                           class="form-control">
+                                                    <label class="form-label">Duty</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-2">
+                                            <div class="form-group form-float">
+                                                <div class="form-line row g-3 col">
+                                                    <input value="" name="amount" type="text"
+                                                           class="form-control" readonly>
+                                                    <label class="form-label">Amount</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-1 col-md-1 col-sm-12 col-xs-1">
+                                            <div class="form-line">
+                                                <button type="submit" class="btn btn-success m-t-15 waves-effect" id="addButton">
+                                                    {{ __('root.common.add') }}
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
+    <button type="button" class="btn btn-primary m-t-15 waves-effect" id="saveButton">
+        Save
+    </button>
+</div>
+                                       
+
+</div>
+
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              
+            </div>
+            <h4>Invoices</h4>
+    <table class="table table-bordered" id="invoiceTable">
+        <thead>
+            <tr>
+                <th>Invoice</th>
+                <th>Pcs</th>
+                <th>Weight</th>
+                <th>Destination</th>
+                <th>Rate</th>
+                <th>Duty</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be dynamically added here -->
+        </tbody>
+        <tfoot>
+        <tr>
+            <th>Total</th>
+            <th id="totalPcs">0</th>
+            <th id="totalWeight">0</th>
+            <td></td>
+            <td></td>
+            <th id="totalDuty">0.00</th>
+            <th id="totalAmount">0.00</th>
+        </tr>
+    </tfoot>
+    </table>
+</div>
+    </section>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+$(document).ready(function() {
+    let voucherCreated = false;
+
+    // Trigger the form submission on "Enter" key press
+    $('#addInvoiceForm').on('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Prevent the default action
+            $(this).submit(); // Trigger the form submission
+        }
+    });
+
+    $('#addInvoiceForm').on('submit', function(e) {
+        e.preventDefault();
+
+    let invoiceData = {
+        invoice_no: $('input[name="invoice_no"]').val(),
+        pcs: $('input[name="pcs"]').val(),
+        weight: $('input[name="weight"]').val(),
+        destination: $('input[name="destination"]').val(),
+        rate: $('input[name="rate"]').val(),
+        duty: $('input[name="duty"]').val(),
+        amount: $('input[name="amount"]').val()
+    };
+
+    let newRow = `
+        <tr>
+            <td>${invoiceData.invoice_no}</td>
+            <td>${invoiceData.pcs}</td>
+            <td>${invoiceData.weight}</td>
+            <td>${invoiceData.destination}</td>
+            <td>${invoiceData.rate}</td>
+            <td>${invoiceData.duty}</td>
+            <td>${invoiceData.amount}</td>
+        </tr>`;
+    
+    $('#invoiceTable tbody').append(newRow);
+    updateTotals();
+
+    // Clear invoice fields
+    $('.invoice-fields input').val('');
+    $('input[name="invoice_no"]').focus();
+    });
+
+    $('#saveButton').on('click', function() {
+    let invoiceData = [];
+
+    $('#invoiceTable tbody tr').each(function() {
+        let row = $(this);
+        let invoice = {
+            invoice_no: row.find('td:eq(0)').text(),
+            pcs: row.find('td:eq(1)').text(),
+            weight: row.find('td:eq(2)').text(),
+            destination: row.find('td:eq(3)').text(),
+            rate: row.find('td:eq(4)').text(),
+            duty: row.find('td:eq(5)').text(),
+            amount: row.find('td:eq(6)').text()
+        };
+        invoiceData.push(invoice);
+    });
+
+    let formData = {
+        voucher_id: $('input[name="voucher_id"]').val(),
+        date: $('input[name="date"]').val(),
+        branch: $('select[name="branch"]').val(),
+        bank_name: $('select[name="bank_name"]').val(),
+        head_of_account: $('select[name="head_of_account"]').val(),
+        description: $('input[name="description"]').val(),
+        invoices: invoiceData,
+        _token: $('input[name="_token"]').val()
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: '/saveVoucherAndInvoices',
+        data: JSON.stringify(formData),
+        contentType: 'application/json; charset=utf-8',
+        success: function(response) {
+            alert(response.message);
+            window.location.href = window.location.href + '?refresh=' + new Date().getTime(); // Add a cache-busting parameter
+        },
+        error: function(response) {
+            console.log('Error:', response);
+        }
+    });
+});
+    function updateTotals() {
+        let totalPcs = 0;
+        let totalWeight = 0;
+        let totalDuty = 0;
+        let totalAmount = 0;
+
+        $('#invoiceTable tbody tr').each(function() {
+            totalPcs += parseInt($(this).find('td:eq(1)').text()) || 0;
+            totalWeight += parseInt($(this).find('td:eq(2)').text()) || 0;
+            totalDuty += parseFloat($(this).find('td:eq(5)').text()) || 0;
+            totalAmount += parseFloat($(this).find('td:eq(6)').text()) || 0;
+        });
+
+        $('#totalPcs').text(totalPcs);
+        $('#totalWeight').text(totalWeight);
+        $('#totalDuty').text(totalDuty.toFixed(2));
+        $('#totalAmount').text(totalAmount.toFixed(2));
+    }
+});
+</script>
+<script>
+    function calculateAmount() {
+    const weight = parseFloat(document.querySelector('input[name="weight"]').value) || 0;
+    const rate = parseFloat(document.querySelector('input[name="rate"]').value) || 0;
+    const duty = parseFloat(document.querySelector('input[name="duty"]').value) || 0;
+
+    const amount = (weight * rate) + duty;
+
+    document.querySelector('input[name="amount"]').value = amount.toFixed(2);
+}
+    </script>
+   <!-- -->
+@stop
+
+@push('include-css')
+    <!-- Dropzone Css -->
+    <link href="{{ asset('asset/plugins/dropzone/dropzone.css') }}" rel="stylesheet">
+    <!-- Multi Select Css -->
+    <link href="{{ asset('asset/plugins/multi-select/css/multi-select.css') }}" rel="stylesheet">
+    <!-- Bootstrap Spinner Css -->
+    <link href="{{ asset('asset/plugins/jquery-spinner/css/bootstrap-spinner.css') }}" rel="stylesheet">
+    <!-- Bootstrap Tagsinput Css -->
+    <link href="{{ asset('asset/plugins/bootstrap-tagsinput/bootstrap-tagsinput.css') }}" rel="stylesheet">
+    <!-- Bootstrap Select Css -->
+    <link href="{{ asset('asset/plugins/bootstrap-select/css/bootstrap-select.css') }}" rel="stylesheet" />
+    <!-- Bootstrap Material Datetime Picker Css -->
+    <link href="{{ asset('asset/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}"
+        rel="stylesheet" />
+    <!-- Bootstrap DatePicker Css -->
+    <link href="{{ asset('asset/plugins/bootstrap-datepicker/css/bootstrap-datepicker.css') }}" rel="stylesheet" />
+@endpush
+
+@push('include-js')
+    <!-- Moment Plugin Js -->
+    <script src="{{ asset('asset/plugins/momentjs/moment.js') }}"></script>
+    <!-- Bootstrap Material Datetime Picker Plugin Js -->
+    <script src="{{ asset('asset/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}">
+    </script>
+    <!-- Bootstrap Datepicker Plugin Js -->
+    <script src="{{ asset('asset/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js') }}"></script>
+    <!-- Autosize Plugin Js -->
+    <script src="{{ asset('asset/plugins/autosize/autosize.js') }}"></script>
+    <script src="{{ asset('asset/js/pages/forms/basic-form-elements.js') }}"></script>
+    <script>
+        @if (Session::has('success'))
+            toastr["success"]('{{ Session::get('success') }}');
+        @endif
+        @if (Session::has('error'))
+            toastr["error"]('{{ Session::get('error') }}');
+        @endif
+        @if ($errors->any())
+            @foreach ($errors->all() as $error)
+                toastr["error"]('{{ $error }}');
+            @endforeach
+        @endif
+        // Validation and calculation
+        var UiController = (function() {
+            var DOMString = {
+                submit_form: 'form.form',
+                branch_id: 'select[name=branch_id]',
+                start_from: 'input[name=start_from]',
+                end_from: 'input[name=end_from]',
+            };
+            return {
+                getDOMString: function() {
+                    return DOMString;
+                },
+                getFields: function() {
+                    return {
+                        get_form: document.querySelector(DOMString.submit_form),
+                        get_start_from: document.querySelector(DOMString.start_from),
+                        get_end_from: document.querySelector(DOMString.end_from),
+                    }
+                },
+                getInputsValue: function() {
+                    var Fields = this.getFields();
+                    return {
+                        start_from: Fields.get_start_from.value == "" ? 0 : Fields.get_start_from,
+                        end_from: Fields.get_end_from.value == "" ? 0 : Fields.get_end_from,
+                    }
+                },
+            }
+        })();
+        var MainController = (function(UICnt) {
+            var DOMString = UICnt.getDOMString();
+            var Fields = UICnt.getFields();
+            var setUpEventListner = function() {
+                Fields.get_form.addEventListener('submit', validation);
+            };
+            var validation = function(e) {
+                var input_values, Fields;
+                input_values = UICnt.getInputsValue();
+                Fields = UICnt.getFields();
+                if (input_values.start_from == 0) {
+                    toastr["error"]('Set {{ __('root.reports.period') }} Date');
+                    e.preventDefault();
+                }
+                if (input_values.end_from == 0) {
+                    toastr["error"]('Set {{ __('root.reports.period') }} Date');
+                    e.preventDefault();
+                }
+            };
+            return {
+                init: function() {
+                    console.log("App Is running");
+                    setUpEventListner();
+                }
+            }
+        })(UiController);
+
+        MainController.init();
+    </script>
+@endpush
