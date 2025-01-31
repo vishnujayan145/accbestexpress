@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-// hi
 use App\Transaction;
 use Illuminate\Http\Request;
 use App\BankCash;
