@@ -172,7 +172,18 @@ return [
         'TrashShow' => 1,
     ],
 
-'AgencyVoucher' => [
+    'AgencyVoucher' => [
+        'All' => 1,
+        'Create' => 1,
+        'Delete' => 1,
+        'Edit' => 1,
+        'Pdf' => 1,
+        'PermanentlyDelete' => 1,
+        'Restore' => 1,
+        'Show' => 1,
+        'TrashShow' => 1,
+    ],
+    'DeliveryVoucher' => [
         'All' => 1,
         'Create' => 1,
         'Delete' => 1,

@@ -1202,7 +1202,7 @@ Route::group(['middleware' => 'auth'], function () {
         'as' => 'reports_accounts_ledger.bank_cash_wise.report'
     ])->middleware('report.ledger.all');
 
- Route::post('/reports/accounts/ledger/cash-receivables/report', [
+    Route::post('/reports/accounts/ledger/cash-receivables/report', [
         'uses' => 'AccountsReportController@ledger_cash_receivables_report',
         'as' => 'reports_accounts_ledger.cash_receivables.report'
     ])->middleware('report.ledger.all');
@@ -1490,8 +1490,8 @@ Route::group(['middleware' => 'auth'], function () {
     ]);
     //    Branch Manage End
 
- 
-     //Agency Voucher 
+
+    //Agency Voucher 
     Route::get('/agency_voucher', [
         'uses' => 'AgencyVoucherController@index',
         'as' => 'agency_voucher'
@@ -1500,25 +1500,52 @@ Route::group(['middleware' => 'auth'], function () {
         'uses' => 'AgencyVoucherController@all',
         'as' => 'agency_voucher.all'
     ]);
-   // Route to save vouchers and invoices together
-  
-Route::post('/saveVoucherAndInvoices', [
-    'uses' => 'AgencyVoucherController@saveVoucherAndInvoices',
-    'as' => 'saveVoucherAndInvoices'
-]);
-// Invoice
-Route::get('/invoice', [
-    'uses' => 'InvoiceController@index',
-    'as' => 'invoice'
-]);
-Route::get('/invoice/active/search', [
-    'uses' => 'InvoiceController@search',
-     'as' => 'invoice.active.search'
+
+    Route::get('/delivery_voucher', [
+        'uses' => 'DeliveryVoucherController@index',
+        'as' => 'delivery_voucher'
+    ]);
+    Route::post('/delivery_voucher', [
+        'uses' => 'DeliveryVoucherController@store',
+        'as' => 'delivery_voucher.store',
+    ]);
+   
+    Route::get('/delivery_voucher/edit/{id}', [
+        'uses' => 'DeliveryVoucherController@edit',
+        'as' => 'delivery_voucher.edit'
+    ]);
+    Route::get('/delivery_voucher/delete/{id}', [
+        'uses' => 'DeliveryVoucherController@delete',
+        'as' => 'delivery_voucher.delete'
+    ]);
+    
+    Route::post('/delivery_voucher/update/{id}', [
+        'uses' => 'DeliveryVoucherController@update',
+        'as' => 'delivery_voucher.update'
+    ]);
+    
+
+    Route::get('/delivery_voucher/all', [
+        'uses' => 'DeliveryVoucherController@all',
+        'as' => 'delivery_voucher.all'
+    ]);
+    // Route to save vouchers and invoices together
+
+    Route::post('/saveVoucherAndInvoices', [
+        'uses' => 'AgencyVoucherController@saveVoucherAndInvoices',
+        'as' => 'saveVoucherAndInvoices'
+    ]);
+    // Invoice
+    Route::get('/invoice', [
+        'uses' => 'InvoiceController@index',
+        'as' => 'invoice'
+    ]);
+    Route::get('/invoice/active/search', [
+        'uses' => 'InvoiceController@search',
+        'as' => 'invoice.active.search'
     ]);
     Route::get('/invoice/active/action', [
-        'uses' => 'InvoiceController@action', 
+        'uses' => 'InvoiceController@action',
         'as' => 'invoice.active.action'
     ]);
-
-
 });
