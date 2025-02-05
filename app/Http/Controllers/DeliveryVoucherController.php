@@ -115,10 +115,11 @@ class DeliveryVoucherController extends Controller
             'delivery_vouchers.ship_no',
             'delivery_vouchers.date',
             'delivery_vouchers.party_id',
+            'delivery_vouchers.remarks',
             'income_expense_heads.name AS party_name', // Selecting name
             DB::raw('SUM(invoice_details.total) AS total_amount') // Sum total amounts if multiple invoices exist
         )
-        ->groupBy('delivery_vouchers.voucher_id', 'delivery_vouchers.ship_no', 'delivery_vouchers.date', 'delivery_vouchers.party_id', 'income_expense_heads.name', 'delivery_vouchers.id')
+        ->groupBy('delivery_vouchers.voucher_id', 'delivery_vouchers.ship_no', 'delivery_vouchers.date', 'delivery_vouchers.party_id', 'delivery_vouchers.remarks','income_expense_heads.name', 'delivery_vouchers.id')
         ->orderBy('delivery_vouchers.id', 'desc')
         ->paginate(60);
     
