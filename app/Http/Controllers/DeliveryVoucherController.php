@@ -98,7 +98,7 @@ class DeliveryVoucherController extends Controller
     }
 
     
-    public function all()
+    public function all(Request $request)
     {
         $data = [];
     
@@ -106,27 +106,39 @@ class DeliveryVoucherController extends Controller
             $data['count_trashed_cv'] = Cache::get('count_trashed_cv');
         }
     
-        // Fetch data with a left join to include all delivery vouchers even if they have no matching invoices
-        $items = DeliveryVoucher::leftJoin('invoice_details', 'delivery_vouchers.voucher_id', '=', 'invoice_details.voucher_id')
-        ->leftJoin('income_expense_heads', 'delivery_vouchers.party_id', '=', 'income_expense_heads.id') // Join to get name
-        ->select(
-            'delivery_vouchers.id',
-            'delivery_vouchers.voucher_id',
-            'delivery_vouchers.ship_no',
-            'delivery_vouchers.date',
-            'delivery_vouchers.party_id',
-            'delivery_vouchers.remarks',
-            'income_expense_heads.name AS party_name', // Selecting name
-            DB::raw('SUM(invoice_details.total) AS total_amount') // Sum total amounts if multiple invoices exist
-        )
-        ->groupBy('delivery_vouchers.voucher_id', 'delivery_vouchers.ship_no', 'delivery_vouchers.date', 'delivery_vouchers.party_id', 'delivery_vouchers.remarks','income_expense_heads.name', 'delivery_vouchers.id')
-        ->orderBy('delivery_vouchers.id', 'desc')
-        ->paginate(60);
+        // Get search query
+        $search = $request->input('search');
     
+        // Fetch data with a left join
+        $query = DeliveryVoucher::leftJoin('invoice_details', 'delivery_vouchers.voucher_id', '=', 'invoice_details.voucher_id')
+            ->leftJoin('income_expense_heads', 'delivery_vouchers.party_id', '=', 'income_expense_heads.id') // Join to get name
+            ->select(
+                'delivery_vouchers.id',
+                'delivery_vouchers.voucher_id',
+                'delivery_vouchers.ship_no',
+                'delivery_vouchers.date',
+                'delivery_vouchers.party_id',
+                'delivery_vouchers.remarks',
+                'income_expense_heads.name AS party_name', // Selecting name
+                DB::raw('SUM(invoice_details.total) AS total_amount') // Sum total amounts if multiple invoices exist
+            )
+            ->groupBy('delivery_vouchers.voucher_id', 'delivery_vouchers.ship_no', 'delivery_vouchers.date', 'delivery_vouchers.party_id', 'delivery_vouchers.remarks', 'income_expense_heads.name', 'delivery_vouchers.id')
+            ->orderBy('delivery_vouchers.id', 'desc');
     
-        return view($this->parentView . '.all', $data)->with('items', $items);
+        // Apply search filter
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('delivery_vouchers.ship_no', 'LIKE', "%{$search}%")
+                  ->orWhere('delivery_vouchers.date', 'LIKE', "%{$search}%")
+                  ->orWhere('income_expense_heads.name', 'LIKE', "%{$search}%"); // Searching by Party Name
+            });
+        }
+    
+        $items = $query->paginate(60);
+    
+        return view($this->parentView . '.all', $data)->with('items', $items)->with('search', $search);
     }
-
+    
     public function edit($id)
     {
         // Fetch the delivery voucher details using the given ID

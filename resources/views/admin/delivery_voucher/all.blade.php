@@ -43,12 +43,12 @@ $transaction = new \App\Transaction();
     <div class="container-fluid">
         <div class="block-header @if ($is_rtl) pull-right @else pull-left @endif">
             <a @if ($create==0) class="dis-none" @endif class="btn btn-sm btn-info waves-effect"
-                href="{{ route('agency_voucher') }}">{{ __('root.common.create') }}</a>
+                href="{{ route('delivery_voucher') }}">{{ __('root.common.create') }}</a>
         </div>
         <ol class="breadcrumb breadcrumb-col-cyan @if ($is_rtl) pull-left  @else pull-right @endif">
             <li><a href="{{ route('dashboard') }}"><i class="material-icons">home</i> {{ __('root.common.home') }}</a>
             </li>
-            <li><a href="{{ route('agency_voucher.all') }}"><i
+            <li><a href="{{ route('delivery_voucher.all') }}"><i
                         class="material-icons">{{ $breadcrumbMainIcon }}</i>&nbsp;{{ 'Delivery Voucher Manage' }}</a></li>
             <li class="active"><i
                     class="material-icons">{{ $breadcrumbCurrentIcon }}</i>&nbsp;{{ $breadcrumbCurrentName }}
@@ -62,7 +62,7 @@ $transaction = new \App\Transaction();
 
 
                         <ul class="header-dropdown m-r--5">
-                            <form class="search" action=""
+                            <form class="search" action="{{ route($ParentRouteName . '.all') }}"
                                 method="get">
                                 {{ csrf_field() }}
                                 <input autofocus type="search" name="search" class="form-control input-sm "
